@@ -4,7 +4,7 @@ MtSimpleRbac
 This module utilizes `Zend\Permissions\Rbac` in order to provide simple (static) access control.
 Use it when your application defines only few roles, with basic access rules.
 For anything more complex (roles and permissions stored in DB, multiple roles per user, etc.),
- try [https://github.com/ZF-Commons/ZfcRbac](ZfcRbac)
+ try [ZfcRbac](https://github.com/ZF-Commons/ZfcRbac).
 
 Installation
 ------------
@@ -39,3 +39,12 @@ Configuration
 Usage
 -----
 
+Use controller plugin to check access:
+
+```php
+$this->rbac()->checkAccess('some_permission');
+```
+
+If current identity (obtained by authentication service specified in config) doesn't have requested permission,
+plugin will throw an exception. Later on, SimpleRbac will capture it (using `MtSimpleRbac\View\AccessDeniedStrategy`)
+and display "Access denied" page.
