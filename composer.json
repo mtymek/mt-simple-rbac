@@ -1,0 +1,30 @@
+{
+    "name": "mtymek/mt-simple-rbac",
+    "description": "ZF2 module that provides interface to Zend\\Permissions\\Rbac, allowing you to add access control to your application.",
+    "type": "module",
+    "version": "1.0",
+    "keywords": [
+        "zf2",
+        "rbac"
+    ],
+    "homepage": "https://github.com/mtymek/mt-simple-rbac",
+    "authors": [
+        {
+            "name": "Mateusz Tymek",
+            "email": "mtymek@gmail.com",
+            "homepage": "http://mateusztymek.pl"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "MtSimpleRbac": "src/"
+        },
+        "classmap": [
+            "./Module.php"
+        ]
+    }
+}
