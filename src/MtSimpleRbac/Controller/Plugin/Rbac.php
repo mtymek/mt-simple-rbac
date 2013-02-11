@@ -6,6 +6,7 @@ use Zend\Permissions\Rbac\Rbac as ZendRbac;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Authentication\AuthenticationService;
 use MtSimpleRbac\Exception\AccessDeniedException;
+use MtSimpleRbac\Identity\RoleProviderInterface;
 
 class Rbac extends AbstractPlugin
 {
@@ -60,10 +61,12 @@ class Rbac extends AbstractPlugin
 
     public function checkAccess($permission, $assert = null)
     {
-        if (!$this->getAuthenticationService()->hasIdentity()) {
-            $role = 'guest';
-        } else {
-            $role = $this->getAuthenticationService()->getIdentity()->getRole();
+        $role = RoleProviderInterface::ROLE_GUEST;
+        if ($this->getAuthenticationService()->hasIdentity()) {
+            $identity = $this->getAuthenticationService()->getIdentity();
+            if ($identity instanceof RoleProviderInterface) {
+                $role = $identity->getRole();
+            }
         }
 
         if (!$this->rbac->isGranted($role, $permission, $assert)) {

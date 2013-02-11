@@ -32,7 +32,7 @@ class AccessDeniedStrategy implements ListenerAggregateInterface
             } else {
                 $model = $vars;
             }
-            $model->setTemplate('rbac-test/access-denied');
+            $model->setTemplate('mt-simple-rbac/access-denied');
             $e->setResult($model);
         }
     }

@@ -5,9 +5,6 @@ namespace MtSimpleRbac;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 
-use Zend\Permissions\Rbac\Rbac;
-use Zend\Permissions\Rbac\Role;
-
 class Module
 {
     public function onBootstrap(MvcEvent $e)
@@ -38,9 +35,14 @@ class Module
         return array(
             'factories' => array(
                 'rbac' => function ($sm) {
+                    // TODO: create separate factory class
                     $serviceLocator = $sm->getServiceLocator();
                     $rbac = $serviceLocator->get('Zend\Permissions\Rbac\Rbac');
-                    $authService = $serviceLocator->get('zfcuser_auth_service');
+                    $config = $serviceLocator->get('Config');
+                    if (!isset($config['mt_simple_rbac'], $config['mt_simple_rbac']['authentication_service'])) {
+                        throw new Exception("Unable to instantiate RBAC plugin: no authentication service is available.");
+                    }
+                    $authService = $serviceLocator->get($config['mt_simple_rbac']['authentication_service']);
                     $plugin = new Controller\Plugin\Rbac($rbac, $authService);
                     return $plugin;
                 },
@@ -52,20 +54,12 @@ class Module
     {
         return array(
             'factories' => array(
-                'Zend\Permissions\Rbac\Rbac' => function() {
-                    $rbac = new Rbac();
-
-                    $guest = new Role('guest');
-                    $member = new Role('member');
-                    $member->addPermission('member_access');
-                    $admin = new Role('admin');
-                    $admin->addPermission('admin_access');
-
-                    $rbac->addRole($guest);
-                    $rbac->addRole($member, 'guest');
-                    $rbac->addRole($admin, 'member');
-
-                    return $rbac;
+                'Zend\Permissions\Rbac\Rbac' => function($sm) {
+                    $config = $sm->get('Config');
+                    return Rbac\Factory::factory(
+                        isset($config['mt_simple_rbac'], $config['mt_simple_rbac']['roles'])
+                            ? $config['mt_simple_rbac']['roles'] : array()
+                    );
                 }
             )
         );
